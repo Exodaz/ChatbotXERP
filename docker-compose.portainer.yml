@@ -1,0 +1,215 @@
+name: chatbotx-erp
+
+services:
+  # ─────────────────────────────────────────────
+  # Database: PostgreSQL 16 (TimescaleDB)
+  # ─────────────────────────────────────────────
+  postgres:
+    image: timescale/timescaledb-ha:pg18-all
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - db-data:/home/postgres/pgdata
+    command: ["postgres", "-c", "log_statement=none"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-chatbotx}
+      POSTGRES_USER: ${POSTGRES_USER:-chatbotx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secretkey}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - chatbotx-network
+
+  # ─────────────────────────────────────────────
+  # Redis: In-Memory Queues & Caching
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - cache-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chatbotx-network
+
+  # ─────────────────────────────────────────────
+  # Object Storage (S3 Compatible): RustFS
+  # ─────────────────────────────────────────────
+  filesystem:
+    image: rustfs/rustfs:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:-chatbotx}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:-secretkey}
+      RUSTFS_API_CORS_ALLOW_ORIGIN: "*"
+    volumes:
+      - filesystem-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "sh",
+          "-c",
+          "curl -f http://127.0.0.1:9000/health && curl -f http://127.0.0.1:9001/rustfs/console/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - chatbotx-network
+
+  filesystem-init:
+    image: rustfs/rc:latest
+    depends_on:
+      filesystem:
+        condition: service_healthy
+    environment:
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:-chatbotx}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:-secretkey}
+    entrypoint: >
+      /bin/sh -c "rc alias set local http://filesystem:9000 $${RUSTFS_ACCESS_KEY} $${RUSTFS_SECRET_KEY}; rc mb local/chatbotx --ignore-existing; touch /tmp/empty && rc cp /tmp/empty local/chatbotx/public/; rc anonymous set public local/chatbotx/public;"
+    networks:
+      - chatbotx-network
+
+  # ─────────────────────────────────────────────
+  # JavaScript Executor (Isolated flow execution)
+  # ─────────────────────────────────────────────
+  javascript-executor:
+    image: ghcr.io/exodaz/chatbotx-javascript-executor:main
+    restart: unless-stopped
+    environment:
+      JAVASCRIPT_EXECUTOR_TOKEN: ${JAVASCRIPT_EXECUTOR_TOKEN:-change-me-in-production-at-least-32-chars}
+      MAX_CONCURRENCY: 2
+    networks:
+      - javascript-executor-network
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3210/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─────────────────────────────────────────────
+  # Realtime WebSocket Server (Port 1999)
+  # ─────────────────────────────────────────────
+  realtime:
+    image: ghcr.io/exodaz/chatbotx-realtime:main
+    restart: unless-stopped
+    ports:
+      - "1999:1999"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chatbotx}:${POSTGRES_PASSWORD:-secretkey}@postgres:5432/${POSTGRES_DB:-chatbotx}?schema=public
+      REDIS_URL: redis://redis:6379
+      REALTIME_BROADCAST_SECRET: ${REALTIME_BROADCAST_SECRET:-change-me-in-production-at-least-32-chars}
+      NEXT_PUBLIC_BUILDER_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3123}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - chatbotx-network
+
+  # ─────────────────────────────────────────────
+  # Worker (BullMQ, Live CF, Triggers, Sync)
+  # ─────────────────────────────────────────────
+  worker:
+    image: ghcr.io/exodaz/chatbotx-worker:main
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chatbotx}:${POSTGRES_PASSWORD:-secretkey}@postgres:5432/${POSTGRES_DB:-chatbotx}?schema=public
+      REDIS_URL: redis://redis:6379
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-VLu1KcS63DTTnZU3Dh/ykI9Ld26YQXy/1IMJdZf/kHI=}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-16fca8032c77c99a42197a57bce0cf1275c110ab1385f8eb6942665ed317a973}
+      S3_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY:-chatbotx}
+      S3_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY:-secretkey}
+      S3_BUCKET: chatbotx
+      S3_REGION: us-west-2
+      S3_ENDPOINT: http://filesystem:9000
+      JAVASCRIPT_EXECUTOR_URL: http://javascript-executor:3210
+      JAVASCRIPT_EXECUTOR_TOKEN: ${JAVASCRIPT_EXECUTOR_TOKEN:-change-me-in-production-at-least-32-chars}
+      REALTIME_INTERNAL_URL: http://realtime:1999
+      REALTIME_BROADCAST_SECRET: ${REALTIME_BROADCAST_SECRET:-change-me-in-production-at-least-32-chars}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3123}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      filesystem:
+        condition: service_healthy
+      javascript-executor:
+        condition: service_healthy
+    networks:
+      - chatbotx-network
+      - javascript-executor-network
+
+  # ─────────────────────────────────────────────
+  # Web App (Next.js 16 Builder, Admin & Checkout)
+  # ─────────────────────────────────────────────
+  builder:
+    image: ghcr.io/exodaz/chatbotx-builder:main
+    restart: unless-stopped
+    ports:
+      - "3123:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chatbotx}:${POSTGRES_PASSWORD:-secretkey}@postgres:5432/${POSTGRES_DB:-chatbotx}?schema=public
+      REDIS_URL: redis://redis:6379
+      NEXT_PUBLIC_EDITION: community
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-VLu1KcS63DTTnZU3Dh/ykI9Ld26YQXy/1IMJdZf/kHI=}
+      BETTER_AUTH_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3123}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3123}
+      NEXT_PUBLIC_REALTIME_URL: ${NEXT_PUBLIC_REALTIME_URL:-http://localhost:1999}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-16fca8032c77c99a42197a57bce0cf1275c110ab1385f8eb6942665ed317a973}
+      S3_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY:-chatbotx}
+      S3_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY:-secretkey}
+      S3_BUCKET: chatbotx
+      S3_REGION: us-west-2
+      S3_ENDPOINT: http://filesystem:9000
+      REALTIME_INTERNAL_URL: http://realtime:1999
+      REALTIME_BROADCAST_SECRET: ${REALTIME_BROADCAST_SECRET:-change-me-in-production-at-least-32-chars}
+      RUN_DB_MIGRATE: "true"
+      RUN_DB_SEED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      filesystem:
+        condition: service_healthy
+    networks:
+      - chatbotx-network
+
+networks:
+  chatbotx-network:
+    driver: bridge
+  javascript-executor-network:
+    driver: bridge
+    internal: true
+
+volumes:
+  db-data:
+  filesystem-data:
+  cache-data:

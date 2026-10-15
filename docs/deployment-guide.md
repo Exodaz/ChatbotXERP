@@ -59,3 +59,31 @@ pnpm build
 pm2 start pnpm --name "chatbotx-builder" -- --filter builder start
 pm2 start pnpm --name "chatbotx-worker" -- --filter worker start
 ```
+
+---
+
+## Deploying via Portainer (One-Click Stack)
+
+ChatbotXERP provides a pre-configured `docker-compose.portainer.yml` stack that pulls pre-built images from GitHub Container Registry (`ghcr.io/exodaz/*`) and automatically executes database migrations.
+
+### Step 1: Open Portainer Web UI
+1. Navigate to your Portainer dashboard.
+2. Select your Docker environment (e.g. `local`).
+3. Click on **Stacks** in the sidebar, then click **+ Add stack**.
+
+### Step 2: Configure the Stack
+1. **Name**: `chatbotx-erp`
+2. **Build method**: **Web editor**
+3. Paste the contents of `docker-compose.portainer.yml` into the editor.
+
+### Step 3: Set Environment Variables in Portainer
+Scroll down to **Environment variables** section in Portainer and add:
+- `NEXT_PUBLIC_APP_URL`: `https://your-domain.com` (Your public domain or IP)
+- `NEXT_PUBLIC_REALTIME_URL`: `https://your-domain.com:1999` (or reverse-proxied realtime endpoint)
+- `POSTGRES_PASSWORD`: *(Strong secret password)*
+- `BETTER_AUTH_SECRET`: *(32-byte base64 string from `openssl rand -base64 32`)*
+- `ENCRYPTION_KEY`: *(64-hex string from `openssl rand -hex 32`)*
+- `REALTIME_BROADCAST_SECRET`: *(32-char secret for WebSocket auth)*
+
+### Step 4: Deploy
+Click **Deploy the stack**. Portainer will pull the pre-built images, create the network and volumes, run database migrations, and start all services!
