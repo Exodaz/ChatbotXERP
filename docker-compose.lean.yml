@@ -1,0 +1,118 @@
+name: chatbotx-lean
+
+services:
+  # ─────────────────────────────────────────────
+  # Database: Lightweight PostgreSQL 16 with pgvector (Alpine, ~80MB, Native ARM64)
+  # ─────────────────────────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg16-alpine
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-chatbotx}
+      POSTGRES_USER: ${POSTGRES_USER:-chatbotx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secretkey}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chatbotx-network
+
+  # ─────────────────────────────────────────────
+  # Redis: Ultralight In-Memory Cache (Alpine, ~15MB RAM)
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - cache-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chatbotx-network
+
+  # ─────────────────────────────────────────────
+  # Realtime WebSocket (Lightweight, ~40MB RAM)
+  # ─────────────────────────────────────────────
+  realtime:
+    image: ghcr.io/exodaz/chatbotx-realtime:main
+    restart: unless-stopped
+    ports:
+      - "1999:1999"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chatbotx}:${POSTGRES_PASSWORD:-secretkey}@postgres:5432/${POSTGRES_DB:-chatbotx}?schema=public
+      REDIS_URL: redis://redis:6379
+      REALTIME_BROADCAST_SECRET: ${REALTIME_BROADCAST_SECRET:-change-me-in-production-at-least-32-chars}
+      NEXT_PUBLIC_BUILDER_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3123}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - chatbotx-network
+
+  # ─────────────────────────────────────────────
+  # Worker (BullMQ & Order Processing)
+  # ─────────────────────────────────────────────
+  worker:
+    image: ghcr.io/exodaz/chatbotx-worker:main
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chatbotx}:${POSTGRES_PASSWORD:-secretkey}@postgres:5432/${POSTGRES_DB:-chatbotx}?schema=public
+      REDIS_URL: redis://redis:6379
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-VLu1KcS63DTTnZU3Dh/ykI9Ld26YQXy/1IMJdZf/kHI=}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-16fca8032c77c99a42197a57bce0cf1275c110ab1385f8eb6942665ed317a973}
+      REALTIME_INTERNAL_URL: http://realtime:1999
+      REALTIME_BROADCAST_SECRET: ${REALTIME_BROADCAST_SECRET:-change-me-in-production-at-least-32-chars}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3123}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - chatbotx-network
+
+  # ─────────────────────────────────────────────
+  # Web App (Next.js 16 Builder)
+  # ─────────────────────────────────────────────
+  builder:
+    image: ghcr.io/exodaz/chatbotx-builder:main
+    restart: unless-stopped
+    ports:
+      - "3123:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chatbotx}:${POSTGRES_PASSWORD:-secretkey}@postgres:5432/${POSTGRES_DB:-chatbotx}?schema=public
+      REDIS_URL: redis://redis:6379
+      NEXT_PUBLIC_EDITION: community
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-VLu1KcS63DTTnZU3Dh/ykI9Ld26YQXy/1IMJdZf/kHI=}
+      BETTER_AUTH_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3123}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3123}
+      NEXT_PUBLIC_REALTIME_URL: ${NEXT_PUBLIC_REALTIME_URL:-http://localhost:1999}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-16fca8032c77c99a42197a57bce0cf1275c110ab1385f8eb6942665ed317a973}
+      REALTIME_INTERNAL_URL: http://realtime:1999
+      REALTIME_BROADCAST_SECRET: ${REALTIME_BROADCAST_SECRET:-change-me-in-production-at-least-32-chars}
+      RUN_DB_MIGRATE: "true"
+      RUN_DB_SEED: "false" # ปิดการรัน Seed ซ้ำเพื่อประหยัด CPU
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - chatbotx-network
+
+networks:
+  chatbotx-network:
+    driver: bridge
+
+volumes:
+  db-data:
+  cache-data:
