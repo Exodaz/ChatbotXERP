@@ -56,6 +56,7 @@
     "./workspace-member/permissions": "./src/workspace-member/permissions.ts",
     "./workspace-role": "./src/workspace-role/index.ts",
     "./order": "./src/order/index.ts",
+    "./order/types": "./src/order/types.ts",
     "./shipping": "./src/shipping/index.ts",
     "./stock-sync": "./src/stock-sync/index.ts",
     "./line": "./src/line/index.ts"

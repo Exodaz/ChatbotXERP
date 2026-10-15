@@ -1,6 +1,6 @@
 "use client"
 
-import type { LiveSalesSummary } from "@chatbotx.io/business"
+import type { LiveSalesSummary } from "@chatbotx.io/business/order/types"
 import { Button } from "@chatbotx.io/ui/components/ui/button"
 import {
   Card,

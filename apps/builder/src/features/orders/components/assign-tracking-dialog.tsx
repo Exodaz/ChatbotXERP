@@ -1,6 +1,6 @@
 "use client"
 
-import { CARRIERS, type CarrierMetadata } from "@chatbotx.io/business"
+import { CARRIERS, type CarrierMetadata } from "@chatbotx.io/business/shipping"
 import type { ShippingCarrierType } from "@chatbotx.io/database/partials"
 import { Button } from "@chatbotx.io/ui/components/ui/button"
 import {

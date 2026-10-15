@@ -1,6 +1,6 @@
 "use client"
 
-import { CARRIERS, getTrackingUrl } from "@chatbotx.io/business"
+import { CARRIERS, getTrackingUrl } from "@chatbotx.io/business/shipping"
 import type {
   OrderStatusType,
   ShippingCarrierType,

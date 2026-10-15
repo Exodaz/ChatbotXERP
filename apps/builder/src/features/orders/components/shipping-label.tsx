@@ -1,4 +1,4 @@
-import { CARRIERS } from "@chatbotx.io/business"
+import { CARRIERS } from "@chatbotx.io/business/shipping"
 import type { ShippingCarrierType } from "@chatbotx.io/database/partials"
 import type { OrderItemModel, OrderModel } from "@chatbotx.io/database/types"
 import { Barcode } from "./barcode"
