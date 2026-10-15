@@ -126,6 +126,7 @@ import { miniAppRelations } from "./mini-app"
 import { minigameRelations } from "./minigame"
 import { minigameContactRelations } from "./minigame-contact"
 import { minigamePlayRelations } from "./minigame-play"
+import { orderRelations } from "./order"
 import { productRelations } from "./product"
 import { productCategoryRelations } from "./product-category"
 import { questionnaireRelations } from "./questionnaire"
@@ -159,6 +160,7 @@ import { whatsappSignupSessionRelations } from "./whatsapp-signup-session"
 import { workspaceRelations } from "./workspace"
 import { workspaceApiTokenRelations } from "./workspace-api-token"
 import { workspaceMemberRelations } from "./workspace-member"
+import { workspaceRoleRelations } from "./workspace-role"
 
 export const relations = {
   ...integrationApiRelations,
@@ -320,4 +322,6 @@ export const relations = {
   ...minigameRelations,
   ...minigameContactRelations,
   ...minigamePlayRelations,
+  ...workspaceRoleRelations,
+  ...orderRelations,
 }

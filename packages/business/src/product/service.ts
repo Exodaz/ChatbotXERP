@@ -1,10 +1,11 @@
-import { type DatabaseClient, db, eq } from "@chatbotx.io/database/client"
+import { and, type DatabaseClient, db, eq } from "@chatbotx.io/database/client"
 import {
   productCategoryRepository,
   productRepository,
 } from "@chatbotx.io/database/repositories"
 import {
   productAddonModel,
+  productModel,
   productVariantModel,
   productVariantOptionModel,
 } from "@chatbotx.io/database/schema"
@@ -59,6 +60,12 @@ export type ProductVariantInput = {
   combination: Record<string, string>
   price: number
   isEnabled: boolean
+  sku?: string | null
+  liveCode?: string | null
+  availableQuantity?: number
+  incomingQuantity?: number
+  maxCapQuantity?: number
+  reservedQuantity?: number
 }
 
 export type ProductAddonInput = {
@@ -425,6 +432,156 @@ class ProductVariantService extends BaseService {
     await tx
       .delete(productVariantModel)
       .where(eq(productVariantModel.productId, productId))
+  }
+
+  /**
+   * Finds a product variant by its liveCode within a workspace
+   */
+  async findByLiveCode(input: {
+    workspaceId: string
+    liveCode: string
+    tx?: DatabaseClient
+  }): Promise<{ variant: ProductVariantModel; product: ProductModel } | null> {
+    const { workspaceId, liveCode, tx = db } = input
+    const normalizedCode = liveCode.trim().toUpperCase()
+
+    const [row] = await tx
+      .select({
+        variant: productVariantModel,
+        product: productModel,
+      })
+      .from(productVariantModel)
+      .innerJoin(
+        productModel,
+        eq(productVariantModel.productId, productModel.id),
+      )
+      .where(
+        and(
+          eq(productModel.workspaceId, workspaceId),
+          eq(productVariantModel.liveCode, normalizedCode),
+          eq(productVariantModel.isEnabled, true),
+        ),
+      )
+
+    return row ?? null
+  }
+
+  /**
+   * Atomic stock reservation for Live CF.
+   * Allows overbooking (availableQuantity can become negative) as long as
+   * (reservedQuantity + quantityToReserve) <= maxCapQuantity.
+   * Returns { success: true, variant } or { success: false, reason: "exceeded_cap" | "not_found" }
+   */
+  async reserveStock(input: {
+    variantId: string
+    quantity: number
+    tx?: DatabaseClient
+  }): Promise<{
+    success: boolean
+    variant?: ProductVariantModel
+    reason?: "exceeded_cap" | "not_found"
+  }> {
+    const { variantId, quantity, tx = db } = input
+
+    return await (tx === db
+      ? db.transaction((t) => this.runReserve(variantId, quantity, t))
+      : this.runReserve(variantId, quantity, tx))
+  }
+
+  private async runReserve(
+    variantId: string,
+    quantity: number,
+    tx: DatabaseClient,
+  ) {
+    const [variant] = await tx
+      .select()
+      .from(productVariantModel)
+      .where(eq(productVariantModel.id, variantId))
+      .for("update")
+
+    if (!variant) {
+      return { success: false, reason: "not_found" as const }
+    }
+
+    if (variant.reservedQuantity + quantity > variant.maxCapQuantity) {
+      return { success: false, reason: "exceeded_cap" as const }
+    }
+
+    const [updated] = await tx
+      .update(productVariantModel)
+      .set({
+        reservedQuantity: variant.reservedQuantity + quantity,
+        availableQuantity: variant.availableQuantity - quantity,
+      })
+      .where(eq(productVariantModel.id, variantId))
+      .returning()
+
+    return { success: true, variant: updated }
+  }
+
+  /**
+   * Releases previously reserved stock (e.g. order expired or cancelled).
+   */
+  async releaseStock(input: {
+    variantId: string
+    quantity: number
+    tx?: DatabaseClient
+  }): Promise<ProductVariantModel | null> {
+    const { variantId, quantity, tx = db } = input
+    const [variant] = await tx
+      .select()
+      .from(productVariantModel)
+      .where(eq(productVariantModel.id, variantId))
+
+    if (!variant) {
+      return null
+    }
+
+    const newReserved = Math.max(0, variant.reservedQuantity - quantity)
+    const newAvailable = variant.availableQuantity + quantity
+
+    const [updated] = await tx
+      .update(productVariantModel)
+      .set({
+        reservedQuantity: newReserved,
+        availableQuantity: newAvailable,
+      })
+      .where(eq(productVariantModel.id, variantId))
+      .returning()
+
+    return updated
+  }
+
+  /**
+   * Syncs initial / updated stock numbers from stock.lovegoo.info into ERP variant.
+   */
+  async syncFromLovegoo(input: {
+    variantId: string
+    availableQuantity: number
+    incomingQuantity: number
+    maxCapQuantity?: number
+    tx?: DatabaseClient
+  }): Promise<ProductVariantModel | null> {
+    const {
+      variantId,
+      availableQuantity,
+      incomingQuantity,
+      maxCapQuantity,
+      tx = db,
+    } = input
+    const cap = maxCapQuantity ?? availableQuantity + incomingQuantity
+
+    const [updated] = await tx
+      .update(productVariantModel)
+      .set({
+        availableQuantity,
+        incomingQuantity,
+        maxCapQuantity: cap,
+      })
+      .where(eq(productVariantModel.id, variantId))
+      .returning()
+
+    return updated ?? null
   }
 }
 

@@ -36,6 +36,7 @@ import { purgeCommentAutomationEvents } from "./handlers/purge-comment-automatio
 import { purgeErrorLogs } from "./handlers/purge-error-logs"
 import { purgeExpiredCallRecordings } from "./handlers/purge-expired-call-recordings"
 import { purgeExpiredConnectSessions } from "./handlers/purge-expired-connect-sessions"
+import { purgeExpiredOrderReservations } from "./handlers/purge-expired-order-reservations"
 import { purgeWhatsappSignupSessions } from "./handlers/purge-whatsapp-signup-sessions"
 import { purgeWorkspaces } from "./handlers/purge-workspaces"
 import { reconcileBroadcasts } from "./handlers/reconcile-broadcasts"
@@ -211,6 +212,10 @@ async function startScheduleWorker() {
 
             case ScheduleJobData.sweepStaleWhatsappCalls:
               await sweepStaleWhatsappCalls()
+              return
+
+            case ScheduleJobData.purgeExpiredOrderReservations:
+              await purgeExpiredOrderReservations()
               return
 
             case ScheduleJobData.refreshChannelTokens:

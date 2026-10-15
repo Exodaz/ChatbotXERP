@@ -1,236 +1,141 @@
-<p align="center">
-  <a href="https://github.com/ChatbotXIO/ChatbotX" target="_blank" rel="noopener">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/readme/chatbotx-logo-dark.svg">
-      <source media="(prefers-color-scheme: light)" srcset=".github/assets/readme/chatbotx-logo-light.svg">
-      <img alt="ChatbotX Logo" src=".github/assets/readme/chatbotx-logo-light.svg" width="280">
-    </picture>
-  </a>
-</p>
+# ChatbotXERP 🚀
 
 <p align="center">
-  <a href="https://opensource.org/license/mit">
-    <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?labelColor=111827">
-  </a>
-</p>
-
-<h3 align="center"><strong><a href="https://chatbotx.io/lifetime/?ref=github">NEW: Get a Lifetime Deal on ChatbotX Cloud</a></strong></h3>
-<h3 align="center"><strong><a href="https://github.com/ChatbotXIO/chatbotx-agent">NEW: get 500+ MCP and CLI Tools for Your AI Agents</a></strong></h3>
-
-<p align="center">
-  <strong>Agentic chat marketing platform built for OpenClaw, Hermes, and Claude</strong>
+  <strong>Omnichannel Facebook Live & LINE OA CF Automation with E-Commerce ERP & Flexible Stock Cap</strong>
   <br>
-  An alternative to ManyChat, Chatfuel, Wati, Respond, etc...
+  An enterprise-grade live commerce ERP built for high-volume live streamers, fashion brands, and multi-channel retailers.
 </p>
 
 <p align="center">
-  <a href="https://chatbotx.io/">Website</a>
-  |
-  <a href="https://chatbotx.canny.io/">Roadmap</a>
-  |
-  <a href="https://chatbotx.io/docs" rel="dofollow">Docs</a>
-  |
-  <a href="https://discord.chatbotx.io/">Discord</a>
+  <a href="https://exodaz.github.io/ChatbotXERP/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue?style=flat-square" alt="Documentation"></a>
+  <img src="https://img.shields.io/badge/Next.js-16.3-black?style=flat-square&logo=next.js" alt="Next.js 16">
+  <img src="https://img.shields.io/badge/PostgreSQL-Drizzle%20ORM-4169E1?style=flat-square&logo=postgresql" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Redis-BullMQ-DC382D?style=flat-square&logo=redis" alt="Redis">
+  <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript" alt="TypeScript">
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License">
 </p>
 
-<p align="center">
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
-  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-111827?logo=nextdotjs&logoColor=white">
-  <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-EF4444?logo=turborepo&logoColor=white">
-  <img alt="pnpm" src="https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white">
-  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white">
-  <img alt="Redis" src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white">
-  <img alt="Docker" src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white">
-  <img alt="MCP" src="https://img.shields.io/badge/MCP-111827">
-</p>
+---
 
-<p align="center">
-  <img alt="WhatsApp" src=".github/assets/readme/whatsapp.svg" width="32">
-  <img alt="Messenger" src=".github/assets/readme/messenger.svg" width="32">
-  <img alt="Instagram" src=".github/assets/readme/instagram.svg" width="32">
-  <img alt="Telegram" src=".github/assets/readme/telegram.svg" width="32">
-  <img alt="Zalo" src=".github/assets/readme/zalo.svg" width="32">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/readme/tiktok-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset=".github/assets/readme/tiktok-light.svg">
-    <img alt="TikTok" src=".github/assets/readme/tiktok-light.svg" width="32">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/readme/threads-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset=".github/assets/readme/threads-light.svg">
-    <img alt="Threads" src=".github/assets/readme/threads-light.svg" width="32">
-  </picture>
-  <img alt="Email" src=".github/assets/readme/email.svg" width="32">
-  <img alt="Website" src=".github/assets/readme/website.svg" width="32">
-</p>
+## 🌟 Key Features
 
-<p align="center">
-  <a href="https://youtube.com/@chatbotxofficial" rel="dofollow"><strong>Watch the YouTube Tutorials»</strong></a>
-  <br />
-</p>
+### 1. 🎥 Facebook Live CF Automation
+- **Real-Time Comment Stream**: Captures live stream comments via Facebook Graph Webhooks.
+- **Intelligent Pattern Matching**: Parses multiple Thai/English CF patterns:
+  - `CF A01 2`, `cf a01`, `CF A01x2`
+  - `ซีเอฟ ก01 1`, `จอง ข02 3`
+- **In-DB Atomic Stock Reservation**: High-concurrency row locking prevents overselling.
+- **Omnichannel Bill Merging (Combined Bill)**: Automatically appends newly CF-ed items into a single active order for the customer within the live session.
+- **Dual Dispatch**: Replies publicly under the comment and instantly sends a Private Reply DM with the direct checkout bill link.
 
-<p align="center">
-  <a href="https://app.chatbotx.io">Register</a>
-  ·
-  <a href="https://chatbotx.io/docs/cli/introduction">CLI</a>
-  ·
-  <a href="https://chatbotx.io/docs/mcp/introduction">MCP</a>
-  ·
-  <a href="https://chatbotx.io/docs/api-reference/api-overview">Public API</a><br />
-</p>
+### 2. 💬 LINE Official Account (LINE OA) Integration
+- **Full LINE Messaging API**: Verified with HMAC-SHA256 signature verification.
+- **Auto Add-Friend Greeting**: Welcomes new followers with clear shopping and CF instructions.
+- **In-Chat CF Ordering**: Customers can type CF codes directly into the LINE OA chat anytime.
+- **Interactive LINE Flex Messages**: Beautiful receipts displaying order items, pricing breakdown, reservation timer, and a direct `💳 กดชำระเงินและแจ้งที่อยู่` button.
 
-<p align="center">
-  <a href="https://chatbotx.io/docs/integrations/n8n">N8N custom node</a>
-  ·
-  <a href="https://chatbotx.io/docs/integrations/make">Make.com integration</a>
-</p>
+### 3. 📦 Flexible Stock & Overbooking Cap
+- **Fashion Catalog & SKU Variants**: Supports multi-attribute combinations (Colors, Sizes, SKUs, Live Codes).
+- **Overbooking / Backorder Cap (`maxCapQuantity`)**: Set maximum booking quotas to accept pre-orders and incoming stock without manual intervention.
+- **Atomic Stock Ledger**: Tracks `quantity` (physical), `reservedQuantity` (CF holds), and `maxCapQuantity` (ceiling).
+- **Automated 24h Expiry Purge**: A BullMQ cron scheduler sweeps expired reservations every 5 minutes and returns held items to inventory.
 
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=b1NUlA-fIzw" target="_blank">
-    <img alt="ChatbotX Omnichannel" src=".github/assets/readme/chatbotx-hero.png?v=1786238500653">
-  </a>
-</p>
+### 4. 🔄 2-Way Stockroom API Sync
+- **External Warehouse Sync**: Integrates with Stockroom API (`http://exodaz.me/stockinventory` / `https://stockinventory.exodazth.workers.dev/api/v1`).
+- **Catalog Import**: 1-click import of products, SKUs, and variant stock.
+- **Automated Webhook Sync**: `POST /api/stock/sync` webhook for inventory synchronization.
 
-## ✨ Features
+### 5. 💳 Web Checkout & Payment Verification
+- **Customer Checkout Portal** (`/checkout/[orderToken]`):
+  - Mobile-first responsive checkout bill.
+  - Multi-item order summary and real-time reservation countdown timer.
+  - Address collection form (Recipient name, phone, address, province, postal code).
+- **Payment Methods**:
+  - **Bank Transfer + Automated Slip Verification**: Powered by **Easyslip API** (validates amount, receiving account, and duplicate slip protection).
+  - **Credit Card / Online Payment**: Powered by **Moneyspace Payment Gateway**.
 
-- **Omnichannel:** WhatsApp, Facebook, Instagram, Threads, TikTok, Telegram, Zalo, Email, API, and Webchat
-- **Visual Flow Builder:** Drag-and-drop chatbot builder with 15+ node types
-- **AI Agents:** OpenAI, Claude, Gemini, DeepSeek, OpenRouter, NVIDIA NIM, and Local LLMs
-- **Live Chat Inbox:** Real-time inbox with human takeover and conversation assignment
-- **Contact CRM:** Manage contacts with tags, custom fields, and segmentation
-- **Broadcasting:** Send targeted messages to specific contact segments
-- **Sequences:** Automate drip campaigns with scheduled messages and auto-enrollment
-- **Team Management:** Invite team members, assign roles, and manage permissions
-- **Rich Messaging:** Media, files, buttons, quick replies, catalogs, locations, and carousel cards
-- **Comment-to-DM:** Automatically message users who comment with specific keywords
-- **Comment Automation:** Auto-reply, like, and hide comments on Messenger, Instagram, Threads, and TikTok posts (on Threads: public reply and hide only — it has no DM or like API)
-- **A/B Testing:** Test and optimize different message flows
-- **Triggers:** Execute actions based on events within your bot
-- **Webhooks & HTTP:** Integrate external APIs directly into your flows
-- **Growth Tools:** Generate conversation starter links for each platform
-- **Analytics:** Track performance metrics, user engagement, and campaign results
-- **APIs, CLI, and MCP:** Build advanced agent workflows with MCP-compatible clients
+### 6. 🚚 Shipping & Fulfillment
+- **Integrated Carriers**: Native tracking generation for **Flash Express**, **J&T Express**, **Kerry Express**, **Thailand Post (ไปรษณีย์ไทย)**, and **SPX Express**.
+- **Admin Orders Hub** (`/space/[workspaceId]/orders`): Search, filter, approve payments, view attached bank slips, and assign tracking numbers.
+- **Standard 100x150 mm Thermal Shipping Labels** (`/space/[workspaceId]/orders/print?ids=...`):
+  - Standard thermal sticker format & A4 multi-label view.
+  - Sender / Recipient details.
+  - Vector SVG Barcode.
+  - Built-in Item Packing Checklist.
 
-| ![AI Agents and Flows](.github/assets/readme/1-ai-agents-and-flows.webp) | ![Live Chat and Team](.github/assets/readme/2-live-chat-and-team.webp) |
-| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| ![Broadcast and Sequence](.github/assets/readme/3-broadcast-and-sequence.webp) | ![Growth Tools](.github/assets/readme/4-growth-tools.webp) |
-| ![Import Contacts](.github/assets/readme/5-import-contacts.webp) | ![OpenClaw and Hermes](.github/assets/readme/6-openclaw-hermes.webp) |
+### 7. 📊 Live Sales Analytics & Real-Time Dashboard
+- **Session KPI Cards** (`/space/[workspaceId]/live-sales`):
+  - Realized Revenue (Paid orders) vs. Potential Revenue (Reserved uncollected).
+  - Conversion Rate % and Average Order Value (AOV).
+  - Top 8 Best-Selling SKU Variants with visual sales bars.
+  - Payment method breakdown & Hourly sales timeline.
+- **AI Cart Recovery**: 1-click Urgency Reminder generation for customers with pending bills before reservation expiry.
 
-## Why ChatbotX?
+---
 
-| Feature | ManyChat | ChatbotX |
-|---|---:|---:|
-| Self-Hosted | ❌ | ✅ |
-| White Label | ❌ | ✅ |
-| CLI & MCP | ❌ | ✅ |
-| Cost Growth | ✅ | ❌ |
-| Public API | Limited | ✅ |
-| Omnichannel | Limited | ✅ |
-| AI Agents | Limited | ✅ |
-| AI Credits | Add-on | BYOK |
+## 🏗️ Tech Stack & Architecture
 
-## Tech Stack
+- **Monorepo**: [Turborepo](https://turbo.build/) + [pnpm](https://pnpm.io/)
+- **Frontend / Web Checkout**: [Next.js 16](https://nextjs.org/) (App Router, React 19, Tailwind CSS, Radix UI)
+- **Background Workers**: [BullMQ](https://bullmq.io/) + Redis
+- **Database & ORM**: PostgreSQL with [Drizzle ORM](https://orm.drizzle.team/)
+- **Storage**: S3-compatible Object Storage (MinIO / RustFS)
+- **Realtime Service**: Node.js WebSocket Server
 
-- Node.js 24
-- TypeScript 5
-- pnpm 10 workspaces
-- Turborepo
-- Next.js 16 and React 19 for `apps/builder`
-- PartyKit / PartySocket for realtime messaging
-- Drizzle ORM with PostgreSQL and pgvector
-- Redis and BullMQ for queues and worker coordination
-- RustFS / S3-compatible storage for uploaded assets
-- Docker Compose for local infrastructure
+---
 
-## Quick Start
+## 🚀 Quick Start & Local Setup
 
-To have the project up and running, please follow the [Quick Start Guide](https://chatbotx.io/docs/quickstart).
+### Prerequisites
+- Node.js >= 24
+- pnpm 10.x
+- Docker & Docker Compose
 
-**Self-hosting ChatbotX without developing on it?** Use **[chatbotx-docker-compose](https://github.com/ChatbotXIO/chatbotx-docker-compose)** — a standalone repo that runs the pre-built `ghcr.io` images with `docker compose up`, no local checkout of this monorepo required. The compose files in this repository (`docker-compose.yml`, `docker-compose.dev.yml`) provision local infrastructure only and expect the apps to run from source via `pnpm dev`.
-
-## Project Structure
-
-```text
-.
-|-- apps/
-|   |-- builder/       # Next.js web app and product builder
-|   |-- worker/        # background workers for chat, AI, triggers, webhooks, analytics, sequences
-|   |-- realtime/      # realtime server
-|   |-- cli/           # ChatbotX command line client
-|   `-- mcp-server/    # MCP server backed by public APIs
-|-- integrations/
-|   |-- whatsapp/
-|   |-- messenger/
-|   |-- instagram/
-|   |-- threads/
-|   |-- telegram/
-|   |-- zalo/
-|   |-- tiktok/
-|   |-- webchat/
-|   |-- smtp/
-|   |-- openai/
-|   |-- google-sheets/
-|   `-- ...           # email/CRM: mailchimp, klaviyo, active-campaign, drip, get-response, mailer-lite, moosend, sendgrid
-|-- packages/
-|   |-- database/
-|   |-- ai/
-|   |-- auth/
-|   |-- business/
-|   |-- automated-response/
-|   |-- analytics/
-|   |-- event-bus/
-|   |-- mail/
-|   |-- imports/
-|   |-- flow-config/
-|   |-- variables/
-|   |-- sdk/
-|   |-- scheduler/
-|   |-- sequence-scheduler/
-|   |-- ui/
-|   `-- worker-config/
-|-- docker-compose.yml
-|-- pnpm-workspace.yaml
-`-- turbo.json
-```
-
-## Development Commands
-
+### 1. Clone & Install
 ```bash
-pnpm dev              # run turbo dev
-pnpm build            # build all packages/apps through Turborepo
-pnpm lint             # run Ultracite lint
-pnpm fix              # run Ultracite fix
-pnpm check:circular   # check circular dependencies
-pnpm check:unused     # check unused files and dependencies
+git clone https://github.com/Exodaz/ChatbotXERP.git
+cd ChatbotXERP
+pnpm install
 ```
 
-Useful package-level commands:
+### 2. Start Infrastructure (PostgreSQL, Redis, S3)
+```bash
+docker compose up -d
+```
+- **PostgreSQL**: `localhost:5433` (DB: `chatbotx`, User: `chatbotx`, Pass: `chatbotx`)
+- **Redis**: `localhost:6379`
+- **MinIO S3**: `localhost:9000` / Console `9001`
 
+### 3. Setup Database Schema & Migrations
+```bash
+pnpm --filter @chatbotx.io/database db:migrate
+```
+
+### 4. Start Development Server
 ```bash
 pnpm --filter builder dev
-pnpm --filter worker dev
-pnpm --filter realtime dev
-pnpm --filter chatbotx dev:cli
-pnpm --filter chatbotx-mcp dev:mcp
-pnpm --filter @chatbotx.io/database db:studio
+```
+Open **`http://localhost:3123`** in your browser.
+
+---
+
+## 🧪 Testing
+
+ChatbotXERP includes comprehensive unit test suites covering all ERP business logic:
+
+```bash
+pnpm --filter @chatbotx.io/business test __tests__/shipping-carriers.test.ts __tests__/order-analytics.test.ts __tests__/stockroom-sync.test.ts __tests__/line-cf-handler.test.ts
 ```
 
-## Services
+---
 
-The default Docker Compose stack includes:
+## 📖 Documentation & GitHub Pages
 
-- PostgreSQL with pgvector on `5432`
-- Redis on `6379`
-- RedisInsight on `5540`
-- RustFS object storage on `9000` and console on `9001`
-- MailHog SMTP on `1025` and UI on `8025`
-- Adminer on `8080`
+Full documentation with architecture diagrams, API schemas, and deployment guides is published on GitHub Pages:
+👉 **[https://exodaz.github.io/ChatbotXERP/](https://exodaz.github.io/ChatbotXERP/)**
 
-## Support
+---
 
-If ChatbotX helps you avoid expensive chatbot automation tools, please give us a ⭐ on GitHub.
-We're also working hard to bring open-source mobile apps to **iOS and Android** this year
+## 📄 License
 
-## License
-
-ChatbotX' Community Edition is released as open source under the [MIT License](https://github.com/ChatbotXIO/ChatbotX/blob/main/LICENSE) and enterprise features are released under [Commercial License](https://github.com/ChatbotXIO/ChatbotX/blob/main/apps/builder/src/enterprise/LICENSE)
+Community Edition is licensed under the [MIT License](LICENSE).

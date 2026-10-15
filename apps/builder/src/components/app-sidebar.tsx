@@ -17,6 +17,7 @@ import {
   MessageCircleMoreIcon,
   PhoneCallIcon,
   RadioIcon,
+  ShoppingBagIcon,
   SlidersHorizontalIcon,
   UsersIcon,
   WebhookIcon,
@@ -143,6 +144,12 @@ export function AppSidebar({
         url: `/space/${workspaceId}/sequences`,
         icon: ChevronsRight,
         permission: PERMISSION_NAV.sequences,
+      },
+      {
+        title: "E-Commerce",
+        url: `/space/${workspaceId}/orders`,
+        icon: ShoppingBagIcon,
+        permission: PERMISSION_NAV.products,
       },
       {
         title: t("triggers.title"),

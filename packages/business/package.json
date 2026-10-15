@@ -53,7 +53,12 @@
     "./workspace-api-token/credentials": "./src/workspace-api-token/credentials.ts",
     "./workspace-lifecycle/predicates": "./src/workspace-lifecycle/predicates.ts",
     "./workspace-member/predicates": "./src/workspace-member/predicates.ts",
-    "./workspace-member/permissions": "./src/workspace-member/permissions.ts"
+    "./workspace-member/permissions": "./src/workspace-member/permissions.ts",
+    "./workspace-role": "./src/workspace-role/index.ts",
+    "./order": "./src/order/index.ts",
+    "./shipping": "./src/shipping/index.ts",
+    "./stock-sync": "./src/stock-sync/index.ts",
+    "./line": "./src/line/index.ts"
   },
   "dependencies": {
     "@chatbotx.io/analytics": "workspace:*",

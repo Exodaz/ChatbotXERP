@@ -59,6 +59,9 @@ export type BroadcastTargetModel =
   typeof schema.broadcastTargetModel.$inferSelect
 export type WorkspaceMemberModel =
   typeof schema.workspaceMemberModel.$inferSelect
+export type WorkspaceRoleModel = typeof schema.workspaceRoleModel.$inferSelect
+export type OrderModel = typeof schema.orderModel.$inferSelect
+export type OrderItemModel = typeof schema.orderItemModel.$inferSelect
 export type WorkspaceApiTokenModel =
   typeof schema.workspaceApiTokenModel.$inferSelect
 export type UserQuotaModel = typeof schema.userQuotaModel.$inferSelect

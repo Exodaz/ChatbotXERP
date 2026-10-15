@@ -3,6 +3,9 @@ import {
   commentAutomationService,
   contactInboxService,
   contactService,
+  orderService,
+  parseLiveCFComment,
+  productVariantService,
   workspaceService,
 } from "@chatbotx.io/business"
 import type {
@@ -271,6 +274,140 @@ export async function processCommentAutomation(
       loadCommentMessage,
       resolveTagInfo,
     })
+  }
+
+  // -------------------------------------------------------------
+  // Live CF Automation Handler (Facebook Live CF order & checkout)
+  // -------------------------------------------------------------
+  if (isLive && message) {
+    const cfParsed = parseLiveCFComment(message)
+    if (cfParsed.isCF && cfParsed.liveCode) {
+      try {
+        const found = await productVariantService.findByLiveCode({
+          workspaceId,
+          liveCode: cfParsed.liveCode,
+        })
+
+        if (found) {
+          const { variant, product } = found
+          // Check stock cap and reserve
+          const reserveResult = await productVariantService.reserveStock({
+            variantId: variant.id,
+            quantity: cfParsed.quantity,
+          })
+
+          if (reserveResult.success) {
+            // Append or create live order for this contact
+            const { order } = await orderService.appendOrCreateLiveOrder({
+              workspaceId,
+              contactId: contactInbox.contactId,
+              liveSessionId: postId,
+              items: [
+                {
+                  productId: product.id,
+                  variantId: variant.id,
+                  productName: product.name,
+                  sku: variant.sku,
+                  liveCode: variant.liveCode,
+                  unitPrice: variant.price || product.price,
+                  quantity: cfParsed.quantity,
+                },
+              ],
+            })
+
+            const builderUrl =
+              process.env.NEXT_PUBLIC_BUILDER_URL || "http://localhost:3123"
+            const checkoutUrl = `${builderUrl}/checkout/${order.orderToken}`
+
+            // 1. Dispatch Public Reply under comment
+            const publicReplyText = `✅ จอง [${variant.liveCode}] จำนวน ${cfParsed.quantity} ชิ้น สำเร็จแล้วค่ะ! กรุณาเช็กข้อความทาง Inbox ได้เลยนะคะ`
+            executePublicReply(
+              { type: "text", value: publicReplyText },
+              {
+                auth,
+                automationId: "live-cf-system",
+                channelType,
+                commentId,
+                contactInbox,
+                contactInboxId,
+                conversationId,
+                delay: 0,
+                integrationIdentifier,
+                integrationType,
+                message,
+                workspaceId,
+              },
+            ).catch((e: unknown) =>
+              logger.error({ e }, "Live CF: failed to send public reply"),
+            )
+
+            // 2. Dispatch 1 Private Reply DM with checkout URL
+            const privateReplyText = `🎉 ยืนยันการจองสินค้าสำเร็จค่ะ!\n\nรหัสสินค้า: ${variant.liveCode} (${product.name})\nจำนวน: ${cfParsed.quantity} ชิ้น\nยอดรวมบิลปัจจุบัน: ฿${order.totalAmount.toLocaleString()}\n\n👉 ดูสรุปบิล กรอกที่อยู่ และชำระเงินได้ที่ลิงก์นี้ค่ะ:\n${checkoutUrl}`
+            executePrivateReply(
+              { type: "text", value: privateReplyText },
+              {
+                auth,
+                automationId: "live-cf-system",
+                channelType,
+                commentId,
+                contactInbox,
+                contactInboxId,
+                conversationId,
+                createdTime,
+                delay: 0,
+                integrationIdentifier,
+                integrationType,
+                message,
+                workspaceId,
+              },
+            ).catch((e: unknown) =>
+              logger.error(
+                { e },
+                "Live CF: failed to enqueue private reply DM",
+              ),
+            )
+
+            logger.info(
+              {
+                workspaceId,
+                contactId: contactInbox.contactId,
+                liveCode: variant.liveCode,
+                orderNumber: order.orderNumber,
+              },
+              "Live CF: Order reserved and checkout link dispatched successfully",
+            )
+            return
+          }
+          // Out of stock / exceeded max cap -> Waitlist reply
+          const waitlistReply = `⚠️ ขออภัยค่ะ [${variant.liveCode}] ยอดจองเต็มจำนวนแล้ว (ระบบลงชื่อในคิวสำรองให้เรียบร้อยแล้วนะคะ หากมีสิทธิ์หลุดจองจะแจ้งให้ทราบทันทีค่ะ)`
+          executePublicReply(
+            { type: "text", value: waitlistReply },
+            {
+              auth,
+              automationId: "live-cf-system",
+              channelType,
+              commentId,
+              contactInbox,
+              contactInboxId,
+              conversationId,
+              delay: 0,
+              integrationIdentifier,
+              integrationType,
+              message,
+              workspaceId,
+            },
+          ).catch((e: unknown) =>
+            logger.error({ e }, "Live CF: failed to send waitlist reply"),
+          )
+          return
+        }
+      } catch (cfErr) {
+        logger.error(
+          { err: cfErr, commentId, message },
+          "Live CF processing error",
+        )
+      }
+    }
   }
 
   // Meta allows a single comment_id-anchored DM per comment, and that budget is

@@ -17,6 +17,8 @@ export function EcommerceTabs({ workspaceId }: { workspaceId: string }) {
   const tabs = [
     { label: t("products.title"), href: `${base}/products` },
     { label: t("orders.title"), href: `${base}/orders` },
+    { label: "Live Sales & Analytics", href: `${base}/live-sales` },
+    { label: "LINE OA", href: `${base}/line` },
     { label: t("productCategories.title"), href: `${base}/product-categories` },
     { label: t("settings.title"), href: `${base}/ecommerce-settings` },
   ]

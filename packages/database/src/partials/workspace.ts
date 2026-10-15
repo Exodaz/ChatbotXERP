@@ -39,6 +39,11 @@ export const workspaceMemberPermissionsSchema = z.object({
   emailAndPhone: z.boolean(),
   broadcast: z.boolean(),
   ecommerce: z.boolean(),
+  orders: z.boolean().optional(),
+  stock: z.boolean().optional(),
+  liveCF: z.boolean().optional(),
+  paymentApproval: z.boolean().optional(),
+  packing: z.boolean().optional(),
 })
 export type WorkspaceMemberPermissions = z.infer<
   typeof workspaceMemberPermissionsSchema

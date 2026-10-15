@@ -48,6 +48,7 @@ export const ScheduleJobData = {
   purgeExpiredCallRecordings: "purgeExpiredCallRecordings",
   sweepStaleWhatsappCalls: "sweepStaleWhatsappCalls",
   dispatchProfileSnapshots: "dispatchProfileSnapshots",
+  purgeExpiredOrderReservations: "purgeExpiredOrderReservations",
 } as const
 
 /**
@@ -286,6 +287,11 @@ export type ScheduleJobSweepStaleWhatsappCalls = {
   data: Record<string, never>
 }
 
+export type ScheduleJobPurgeExpiredOrderReservations = {
+  type: typeof ScheduleJobData.purgeExpiredOrderReservations
+  data: Record<string, never>
+}
+
 export type ScheduleJobData =
   | ScheduleJobBroadcast
   | ScheduleJobEnqueueBroadcast
@@ -324,6 +330,7 @@ export type ScheduleJobData =
   | ScheduleJobTeardownExpiredTrial
   | ScheduleJobPurgeExpiredCallRecordings
   | ScheduleJobSweepStaleWhatsappCalls
+  | ScheduleJobPurgeExpiredOrderReservations
 
 export const scheduleQueue = isNoRedisEnv()
   ? fakeQueue

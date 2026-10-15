@@ -518,4 +518,19 @@ export const registerSchedules = async () => {
       },
     },
   )
+
+  // E-Commerce: release reserved stock for orders past 24h expiration every 5 minutes
+  await scheduleQueue.upsertJobScheduler(
+    ScheduleJobData.purgeExpiredOrderReservations,
+    {
+      pattern: "*/5 * * * *",
+    },
+    {
+      name: ScheduleJobData.purgeExpiredOrderReservations,
+      data: {
+        type: ScheduleJobData.purgeExpiredOrderReservations,
+        data: {},
+      },
+    },
+  )
 }
