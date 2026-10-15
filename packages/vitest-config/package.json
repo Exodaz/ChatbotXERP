@@ -24,7 +24,7 @@
     "@vitest/coverage-v8": "^4.1.8",
     "jsdom": "^25.0.1",
     "msw": "^2.7.3",
-    "vite-tsconfig-paths": "^5.1.4",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
   "devDependencies": {
