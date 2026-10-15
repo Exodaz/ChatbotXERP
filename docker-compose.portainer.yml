@@ -7,8 +7,8 @@ services:
   postgres:
     image: timescale/timescaledb-ha:pg18-all
     restart: unless-stopped
-    ports:
-      - "${POSTGRES_PORT:-5433}:5432"
+    # ports:
+    #   - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - db-data:/home/postgres/pgdata
     command: ["postgres", "-c", "log_statement=none"]
@@ -31,8 +31,6 @@ services:
   redis:
     image: redis:8-alpine
     restart: unless-stopped
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - cache-data:/data
     healthcheck:
