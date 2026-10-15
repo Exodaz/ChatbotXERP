@@ -5,7 +5,7 @@ services:
   # Database: Lightweight PostgreSQL 16 with pgvector (Alpine, ~80MB, Native ARM64)
   # ─────────────────────────────────────────────
   postgres:
-    image: pgvector/pgvector:pg16-alpine
+    image: pgvector/pgvector:pg16
     restart: unless-stopped
     volumes:
       - db-data:/var/lib/postgresql/data
