@@ -49,8 +49,8 @@ services:
     restart: unless-stopped
     command: server /data --console-address ":9001"
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "${FILESYSTEM_PORT:-9100}:9000"
+      - "${FILESYSTEM_CONSOLE_PORT:-9101}:9001"
     environment:
       RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:-chatbotx}
       RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:-secretkey}
